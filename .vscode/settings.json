@@ -1,0 +1,112 @@
+{
+  "editor.wordWrap": "on",
+  "editor.formatOnSave": true,
+  // #############################################################
+  // ----------- Language-specific formatting settings -----------
+  "[latex]": {
+    "editor.defaultFormatter": "James-Yu.latex-workshop",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  // #############################################################
+  // ----------- LaTeX Workshop configurations -----------
+  "latex-workshop.latex.tools": [
+    {
+      // sudo apt install texlive
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-pdf",
+        "%DOC%"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk",
+      "tools": [
+        "latexmk"
+      ]
+    }
+  ],
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.blg",
+    "*.idx",
+    "*.ind",
+    "*.lof",
+    "*.lot",
+    "*.out",
+    "*.toc",
+    "*.acn",
+    "*.acr",
+    "*.alg",
+    "*.glg",
+    "*.glo",
+    "*.gls",
+    "*.fls",
+    "*.log",
+    "*.fdb_latexmk",
+    "*.snm",
+    "*.nav",
+    "*.dvi"
+  ],
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  // #############################################################
+  //   ----------- LaTeX formatting configuration -----------
+  "latex-workshop.formatting.latex": "latexindent",
+  "latex-workshop.formatting.latexindent.path": "latexindent",
+  "latex-workshop.formatting.latexindent.args": [
+    "-c",
+    "%DIR%/",
+    "%TMPFILE%",
+    "-y=defaultIndent: '%INDENT%'"
+  ],
+  "latex-workshop.message.badbox.show": "overfull",
+  // #############################################################
+  //         ----------- LTeX+ Configuration -----------
+  "ltex.enabled": [
+    "latex",
+    "bibtex"
+  ],
+  "ltex.language": "en-US",
+  "ltex.additionalRules.enablePickyRules": true,
+  "ltex.diagnosticSeverity": {
+    "default": "information",
+    "MORFOLOGIK_RULE_EN_US": "warning",
+    "PASSIVE_VOICE": "hint",
+    "ENGLISH_WORD_REPEAT_BEGINNING_RULE": "hint",
+    "TOO_LONG_SENTENCE": "hint"
+  },
+  // Handle custom LaTeX commands to avoid false positives
+  "ltex.latex.commands": {
+    "\\mycommand": "ignore",
+  },
+  "ltex.latex.environments": {
+    "myenv": "ignore",
+    "equation": "ignore"
+  },
+  // #############################################################
+  //   ----------- Spelling Checker Configuration -----------
+  // Enable both English and Russian spell checking
+  "cSpell.language": "en,ru",
+  "cSpell.enabledFileTypes": {
+    "latex": true,
+    "markdown": true,
+    "plaintext": true,
+    "tex": true
+  },
+  "cSpell.words": [
+    "DISPT"
+  ]
+}
