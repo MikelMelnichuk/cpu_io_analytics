@@ -1,0 +1,31 @@
+
+--- 
+p_0=\left(1+\sum_{i=1}^{n}\left(\frac{\lambda^i}{i!\bullet\prod_{j=1}^{i}\mu\left(n,\alpha,j\right)}\right)+\sum_{r=1}^{\infty}\left(\frac{\lambda^{n+r}}{n!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,j\right)\bullet n^r\bullet{\mu\left(n,\alpha,n\right)}^r}\right)\right)^{-1}\bigm=\left(1+\sum_{i=1}^{n}\left(\frac{\lambda^i}{i!\bullet\prod_{j=1}^{i}\mu\left(n,\alpha,j\right)}\right)+\frac{\lambda^n}{n!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)}\sum_{r=1}^{\infty}\left(\frac{\lambda}{n\mu\left(n,\alpha,n\right)}\right)^r\right)^{-1}\bigm=\left(1+\sum_{i=1}^{n}\left(\frac{\lambda^i}{i!\bullet\prod_{j=1}^{i}\mu\left(n,\alpha,j\right)}\right)+\frac{\lambda^n}{n!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)}\frac{\frac{\lambda}{n\mu\left(n,\alpha,n\right)}}{1-\frac{\lambda}{n\mu\left(n,\alpha,n\right)}}\right)^{-1}\bigm=\left(1+\sum_{i=1}^{n}\left(\frac{\lambda^i}{i!\bullet\prod_{j=1}^{i}\mu\left(n,\alpha,j\right)}\right)+\frac{\lambda^{n+1}}{n!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}\right)^{-1}
+
+p_0=\left(1+\sum_{i=1}^{n}\left(\frac{\lambda^i}{i!\bullet\prod_{j=1}^{i}\mu\left(n,\alpha,j\right)}\right)+\frac{\lambda^{n+1}}{n!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}\right)^{-1}
+
+--- 
+p_k=λkk!∙i=1kμn,α,ip0                                      for k≤nλkn!∙i=1nμn,α,i∙nμn,α,nk-np0    for k>n
+
+--- 
+p_Q=\frac{\lambda^{n+1}}{n!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}p_0
+
+--- 
+L_N=\sum_{k=1}^{n}{k\bullet p_k}+\sum_{k=n+1}^{\infty}{n\bullet p_k}\bigm=\sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\sum_{r=1}^{\infty}\frac{n\lambda^{n+r}}{n!\bullet\prod_{i=1}^{n}{\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)\right)^r}}\ p_0\bigm=\sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\frac{n\lambda^n}{n!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)}\sum_{r=1}^{\infty}\frac{\lambda^r}{\left(n\mu\left(n,\alpha,n\right)\right)^r}\ p_0\bigm=\sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\frac{\lambda^n}{\left(n-1\right)!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)}\sum_{r=1}^{\infty}\left(\frac{\lambda}{n\mu\left(n,\alpha,n\right)}\right)^rp_0\bigm=\sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\frac{\lambda^n}{\left(n-1\right)!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)}\frac{\lambda}{n\mu\left(n,\alpha,n\right)-\ \lambda}p_0\bigm=\ \sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\frac{\lambda^{n+1}}{\left(n-1\right)!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}p_0
+
+L_N =\sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\frac{\lambda^{n+1}}{\left(n-1\right)!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}p_0
+
+--- 
+L_Q=\sum_{r=1}^{\infty}{r\bullet p_{n+r}}=\sum_{r=1}^{\infty}\frac{r\lambda^{n+r}}{n!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)\right)^r}\ p_0\bigm=\frac{\lambda^{n+1}}{n!\bullet\prod_{i=1}^{n}{\mu\left(n,\alpha,i\right)\bullet n\mu\left(n,\alpha,n\right)}}\sum_{r=1}^{\infty}\frac{r\lambda^{r-1}}{\left(n\mu\left(n,\alpha,n\right)\right)^{r-1}}p_0\bigm=\frac{\lambda^{n+1}}{n!\bullet\prod_{i=1}^{n}{\mu\left(n,\alpha,i\right)\bullet n\mu\left(n,\alpha,n\right)}}\sum_{r=1}^{\infty}{r\left(\frac{\lambda}{n\mu\left(n,\alpha,n\right)}\right)^{r-1}}p_0,\ \ q=\frac{\lambda}{n\mu\left(n,\alpha,n\right)}\bigm=\ \frac{\lambda^{n+1}}{n!\bullet\prod_{i=1}^{n}{\mu\left(n,\alpha,i\right)\bullet n\mu\left(n,\alpha,n\right)}}\frac{1}{\left(1-\frac{\lambda}{n\mu\left(n,\alpha,n\right)}\right)^2}p_0\bigm=\frac{\lambda^{n+1}}{n!\bullet\prod_{i=1}^{n}{\mu\left(n,\alpha,i\right)\bullet n\mu\left(n,\alpha,n\right)}}\frac{\left(n\mu\left(n,\alpha,n\right)\right)^2}{\left(n\mu\left(n,\alpha,n\right)-\lambda\right)^2}p_0\bigm=\frac{\mu\left(n,\alpha,n\right)\lambda^{n+1}}{\left(n-1\right)!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\left(n\mu\left(n,\alpha,n\right)-\lambda\right)^2}p_0
+
+L_Q=\frac{\mu\left(n,\alpha,n\right)\lambda^{n+1}}{\left(n-1\right)!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\left(n\mu\left(n,\alpha,n\right)-\lambda\right)^2}p_0
+
+--- 
+L=L_N+L_Q\bigm=\ \sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\frac{\lambda^{n+1}}{\left(n-1\right)!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}p_0+\frac{\mu\left(n,\alpha,n\right)\lambda^{n+1}}{\left(n-1\right)!\bullet\prod_{i=1}^{n}\mu\left(n,\alpha,i\right)\left(n\mu\left(n,\alpha,n\right)-\lambda\right)^2}p_0\bigm=\ \sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\frac{\lambda^{n+1}}{\left(n-1\right)!\bullet\prod_{i=1}^{n}{\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}}\left(1+\frac{\mu\left(n,\alpha,n\right)}{\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}\right)p_0
+
+L=\sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\frac{\lambda^{n+1}}{\left(n-1\right)!\bullet\prod_{i=1}^{n}{\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}}\left(1+\frac{\mu\left(n,\alpha,n\right)}{\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}\right)p_0
+
+--- 
+T=\frac{L}{\lambda}=\sum_{k=1}^{n}\frac{k\lambda^{\mathbit{k}-\mathbf{1}}}{k!\prod_{i=1}^{k}\mu\left(n,\alpha,i\right)}p_0+\frac{\lambda^\mathbit{n}}{\left(n-1\right)!\bullet\prod_{i=1}^{n}{\mu\left(n,\alpha,i\right)\bullet\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}}\left(1+\frac{\mu\left(n,\alpha,n\right)}{\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}\right)p_0
+
+

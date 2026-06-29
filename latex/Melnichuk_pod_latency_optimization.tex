@@ -1,0 +1,118 @@
+\documentclass[12pt]{article}
+
+% --- Options passed, but may be ignored if paper loads biblatex with explicit options ---
+\PassOptionsToPackage{backend=biber, style=numeric, sorting=none}{biblatex}
+
+\usepackage{paper,math}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian,english]{babel}
+\usepackage{csquotes}
+
+\addbibresource{references.bib}
+
+\hfuzz=30pt % Suppresses warnings for lines up to 20pt too wide
+\sloppy
+
+\title{Title}
+\author{
+  Мельничук Михаил\\ {\itshape\large Университет ИТМО}
+}
+\date{\today}
+
+\hypersetup{
+  pdftitle = {Example Paper Title},
+  pdfauthor = {Author One, Author Two},
+}
+
+\booltrue{INCLUDECOMMENTS}
+\newcommand{\kyle}[1]{\coauthorComment[Kyle]{#1}}
+
+\begin{document}
+
+% Title Page -------------------------------------------------------------------
+\maketitle
+\begin{abstract}
+  Abstract text
+
+  \par\vspace{-2.5mm}
+\end{abstract}
+
+\newpage
+
+% ##################################################################################################
+\section{Introduction}
+
+Citation example \cite{mas1995microeconomic}.
+
+% ##################################################################################################
+\section{Model}
+
+Text text text text text text text text text text.
+
+\graphicspath{{Melnichuk_Figs/}}
+\begin{figure}[!htbp]
+  \centering\small
+  \begin{tabular}{cp{10mm}c}
+    \includegraphics[height=1.3cm]{System_States.png} \\
+  \end{tabular}\\
+  \renewcommand{\figurename}{Fig.}
+  \parbox{150mm}{
+    \caption{\centering
+      A transition diagram of the state space of the system. Each state $S_k$ corresponds to having $k$ requests in the system (either in service or waiting).
+    }
+    \label{Mel_fig_System_States}}
+  \vspace{-1\baselineskip}
+\end{figure}
+
+Let $p_k$ denote steady state probability of state $S_k$. Solving global balance equations yields probability of having no requests  in the system $p_0$ is shown in Eq. \ref{eq:p0}.
+
+\begin{align}
+  p_0 & = \left(1+\sum_{i=1}^{n}\left(\frac{\lambda^i}{i!\prod_{j=1}^{i}\mu\left(n,\vec{R},j\right)}\right)+\sum_{r=1}^{m}\left(\frac{\lambda^{n+r}}{n!\prod_{j=1}^{n}\mu\left(n,\vec{R},j\right) n^r{\mu\left(n,\vec{R},n\right)}^r}\right)\right)^{-1} \nonumber                                                                                                            \\
+      & = \left(1+\sum_{i=1}^{n}\left(\frac{\lambda^i}{i!\prod_{j=1}^{i}\mu\left(n,\vec{R},j\right)}\right)+\frac{\lambda^n}{n!\prod_{j=1}^{n}\mu\left(n,\vec{R},j\right)}\sum_{r=1}^{m}\left(\frac{\lambda}{n\mu\left(n,\vec{R},n\right)}\right)^r\right)^{-1} \nonumber                                                                                                     \\
+      & = \left(1+\sum_{i=1}^{n}\left(\frac{\lambda^i}{i!\prod_{j=1}^{i}\mu\left(n,\vec{R},j\right)}\right)+\frac{\lambda^n}{n!\prod_{i=1}^{n}\mu\left(n,\vec{R},i\right)}\frac{\frac{\lambda}{n\mu\left(n,\vec{R},n\right)}\left(1-\left(\frac{\lambda}{n\mu\left(n,\vec{R},n\right)}\right)^m\right)}{1-\frac{\lambda}{n\mu\left(n,\vec{R},n\right)}}\right)^{-1} \nonumber \\
+      & = \left(1+\sum_{i=1}^{n}\left(\frac{\lambda^i}{i!\prod_{j=1}^{i}\mu\left(n,\vec{R},j\right)}\right)+\frac{\lambda^{n+1}}{n!\prod_{i=1}^{n}\mu\left(n,\vec{R},i\right)}\frac{1-\left(\frac{\lambda}{n\mu\left(n,\vec{R},n\right)}\right)^m}{n\mu\left(n,\vec{R},n\right)-\lambda}\right)^{-1}
+  \label{eq:p0}
+\end{align}
+
+
+\begin{equation}
+  p_k =
+  \begin{cases}
+    \dfrac{\lambda^k}{k! \prod_{j=1}^{k} \mu(n,\vec{R},j)} \, p_0,                                         & k \le n       \\[10pt]
+    \dfrac{\lambda^k}{\bigl(n \mu(n,\vec{R},n)\bigr)^{k-n} \, n! \prod_{i=1}^{n} \mu(n,\vec{R},i)} \, p_0, & n < k \le n+m \\[10pt]
+    0,                                                                                                     & k > n+m
+  \end{cases}
+  \label{eq:pk}
+\end{equation}
+
+Среднее число заявок, находящихся под обслуживанием, т.е. среднее число занятых каналов:
+\begin{equation}
+  \begin{split}
+    L_{\text{Об}} & = \sum_{r=1}^{n} r p_r + \sum_{r=1}^{m} n p_{n+r}                                                                                                                                                                                                    \\
+                  & = \sum_{r=1}^{n} r \frac{\lambda^r}{r!\prod_{i=1}^{r}\mu(n,\vec{R},i)} p_0 + \sum_{r=1}^{m} n \frac{\lambda^{n+r}}{\bigl(n\mu(n,\vec{R},n)\bigr)^r \, n! \prod_{i=1}^{n}\mu(n,\vec{R},i)} p_0                                                        \\
+                  & = \left( \sum_{r=1}^{n} \frac{\lambda^r}{(r-1)!\prod_{i=1}^{r}\mu(n,\vec{R},i)} + \frac{\lambda^n}{(n-1)!\prod_{i=1}^{n}\mu(n,\vec{R},i)} \sum_{r=1}^{m} \left(\frac{\lambda}{n\mu(n,\vec{R},n)}\right)^r \right) p_0                                \\
+                  & = \left( \sum_{k=1}^{n} \frac{\lambda^k}{(k-1)!\prod_{i=1}^{k}\mu(n,\vec{R},i)} + \frac{\lambda^{n+1}}{(n-1)!\prod_{i=1}^{n}\mu(n,\vec{R},i)} \cdot \frac{1-\left(\frac{\lambda}{n\mu(n,\vec{R},n)}\right)^m}{n\mu(n,\vec{R},n)-\lambda} \right) p_0
+  \end{split}
+  \label{eq:L}
+\end{equation}
+
+% ##################################################################################################
+\section{Results}
+
+Text text text text text text text text text text.
+
+% ##################################################################################################
+\section{Results}
+
+Text text text text text text text text text text.
+
+% ##################################################################################################
+\section{Discussion}
+Text text text text text text text text text text.
+
+% ##################################################################################################
+\printbibliography[title={References}]   % <-- ADDED – prints the reference list
+
+\end{document}
