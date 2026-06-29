@@ -531,3 +531,7 @@ TSWLatexianTemp*
 
 # local wget logs
 wget-log*
+
+# local datadases
+*.csv
+*.csv#
