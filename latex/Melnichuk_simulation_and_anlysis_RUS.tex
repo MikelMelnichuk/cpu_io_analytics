@@ -50,9 +50,10 @@
 \section{Model}
 
 
-The paper \cite{мельничук2026анализ} provided an experimental testbed designed to emulate a queuing system within the currently used containerized orchestration framework of Kubernetes. The system architecture, as shown in Figure \ref{fig:Experimental_Setup}, consists of a dedicated Proxmox hypervisor server (with its own hardware) hosting a Kubernetes cluster with two nodes (one primary and one secondary node). The above setup ensures resource isolation and repeatability. A continuous stream of incoming requests, assumed to follow a Poisson process with intensity, is directed to the cluster. The Load Balancer is then responsible for distributing the request stream in a first in first out (FIFO) manner.
+В статье \cite{мельничук2026анализ} представлена экспериментальная тестовая среда, предназначенная для моделирования системы очередей в рамках используемой контейнерной среды Kubernetes. Архитектура системы, как показано на рисунке \ref{fig:Experimental_Setup}, состоит из выделенного сервера гипервизора Proxmox (с собственным аппаратным обеспечением), на котором размещен кластер Kubernetes с двумя узлами (одним основным и одним резервным). Такая конфигурация обеспечивает изоляцию ресурсов и воспроизводимость результатов. Непрерывный поток входящих запросов, который, как предполагается, подчиняется процессу Пуассона с интенсивностью $\lambda$, поступает в кластер. Затем балансировщик нагрузки распределяет поток запросов по принципу 'первым пришел первым обслужен' (FIFO).
 
-The core microservice was implemented as a single, stateless Docker container image capable of processing both request types: CPU bound and I/O bound inquiries all with service time. The system is scaled horizontally by instantiating n identical replicas (pods/microservices) of this container, which function as s homogeneous servers in the model. The Kubernetes scheduler was responsible for distributing these pods across the available cluster nodes.
+Основной микросервис был реализован в виде единого образа контейнера Docker без состояния, способного обрабатывать оба типа запросов: как CPU-зависимые, так и I/O-зависимые, причём все с фиксированным временем обслуживания. Система масштабируется горизонтально путём создания n идентичных реплик (подов/микросервисов) этого контейнера, которые в модели функционируют как s однородных серверов. Планировщик Kubernetes отвечал за распределение этих подов по доступным узлам кластера.
+
 
 \graphicspath{{Melnichuk_Figs/}}
 \begin{figure}[!htbp]
@@ -60,34 +61,35 @@ The core microservice was implemented as a single, stateless Docker container im
   \begin{tabular}{cp{10mm}c}
     \includegraphics[height=5cm]{Experimental_Setup.jpeg} \\
   \end{tabular}\\
-  \renewcommand{\figurename}{Fig.}
+  \renewcommand{\figurename}{Рис.}
   \parbox{150mm}{
     \caption{\centering
-      Experimental setup with a two node Kubernetes cluster, within a Proxmox server with its own dedicated hardware. The cluster includes a Load Balancer for request distribution and stateless microservice containers that process the incoming requests.
+      Экспериментальная установка, представляющая собой кластер Kubernetes состоящий из двух узлов, развернутый на собственном выделенном оборудовании. Кластер включает в себя балансировщик нагрузки для распределения запросов и контейнеры микросервисов которые обрабатывают входящие запросы.
     }
     \label{fig:Experimental_Setup}}
   \vspace{-1\baselineskip}
 \end{figure}
 
-The system was modeled as a queue with a state transition diagram illustrated in Figure \ref{fig:State_Transition_Graph}. Each state  denotes the presence of  queries in the system. The queue is unlimited, which means that the number of requests in the system can be less or more than the number of containers.
+Система была смоделирована в виде СМО с диаграммой переходов между состояниями, представленной на рисунке \ref{fig:State_Transition_Graph}. Каждое состояние $S_i$ обозначает наличие $i$ запросов в системе. Очередь не имеет ограничений по размеру, что означает, что количество запросов в системе может быть меньше или больше количества контейнеров.
 
 \begin{figure}[!htbp]
   \centering\small
   \begin{tabular}{cp{10mm}c}
     \includegraphics[height=1.3cm]{State_Transition_Graph.jpeg} \\
   \end{tabular}\\
-  \renewcommand{\figurename}{Fig.}
+  \renewcommand{\figurename}{Рис.}
   \parbox{150mm}{
     \caption{\centering
-      State transition diagram of the system investigated.
+      Диаграмма переходов между состояниями исследуемой системы.
     }
     \label{fig:State_Transition_Graph}}
   \vspace{-1\baselineskip}
 \end{figure}
 
-The workload was characterized by a mixed distribution of requests. The key independent variable in this study was alpha ($\alpha$), defined as the proportion of requests that are CPU bound. Consequently, the proportion of I/O bound requests was ($1-\alpha$). The arrival process followed a Poisson distribution with intensity $\lambda$ and the service rate $\mu$ was a function of $n$ (number of containers), $\alpha$ (proportion of CPU bound requests), and $i$ (number of requests present in system). The problem with this assumption in practice is that to incorporate the state dependent nature of $\mu$, there is a need to model $\mu\left(n,\alpha,n\right)$ for each $i$, which is impossible for a system of such scale.
 
-For this reason, in this paper, a smooth function $\mu^{*}\left(n,\alpha,n\right)$ is fitted with polynomial regression so that we can predict the average service rate for any unseen $(n,\alpha)$ without having to account for $i$. The service rate function was interpolated using the empirical data gathered on the experimental setup. This was done by implying that for each datapoint $(n,\alpha)$ the service rate is approximately $\frac{1}{\frac{1}{N}\sum_{r=0}^{N} T_{n,\alpha}(r)}$, for a big enough $N$. Where $T_{n,\alpha}(r)$ is the measured service time of request number $r$ (for a given $n$ and $\alpha$), and $N$ is the number of requests sent to the system. These measurements implicitly accounts for overhead of Kubernetes, load balancing, and the effect of $\alpha$ on the service rate.
+Нагрузка характеризовалась смешанным распределением запросов. Ключевой независимой переменной в данном исследовании являлась величина альфа ($\alpha$), определяемая как доля запросов, ограниченных производительностью ЦП. Следовательно, доля запросов, ограниченных вводом выводом, равна ($1-\alpha$). Процесс поступления запросов подчинялся распределению Пуассона с интенсивностью $\lambda$, а скорость обслуживания $\mu\left(n,\alpha, n, i\right)$ являлась функцией зависящей от $n$ (количество обслуживающих контейнеров), $\alpha$ (доля запросов, загружающих ЦП) и $i$ (количество запросов, находящихся в системе). Проблема этого допущения на практике заключается в том, что для учета зависимости $\mu$ от состояния системы необходимо смоделировать $\mu\left(n,\alpha,n\right)$ для каждого $i$, что невозможно для системы такого масштаба.
+
+По этой причине в данной работе функция скорости обслуживания $\mu^{*}\left(n,\alpha,n\right)$ аппроксимируется с помощью полиномиальной регрессии, что позволяет прогнозировать среднюю скорость обслуживания для любой неизвестной пары $(n,\alpha)$ без необходимости учитывать $i$. Функция скорости обслуживания получена с использованием эмпирических данных, собранных на экспериментальной установке. Это было сделано на основе предположения, что для каждой $(n, \alpha)$ скорость обслуживания приблизительно равна $\frac{1}{\frac{1}{N}\sum_{r=0}^{N} T_{n,\alpha}(r)}$ при достаточно большом значении $N$. Где $T_{n,\alpha}(r)$ — измеренное время обслуживания запроса с номером $r$ (для заданных $n$ и $\alpha$), а $N$ количество запросов, отправленных в систему. Эти измерения косвенно учитывают накладные расходы Kubernetes, балансировку нагрузки и влияние $\alpha$ на скорость обслуживания.
 
 Отметим как $\rho=\frac{\lambda}{\mu^{*}(n,\alpha)}$.
 
@@ -156,7 +158,7 @@ For this reason, in this paper, a smooth function $\mu^{*}\left(n,\alpha,n\right
   \begin{tabular}{cp{10mm}c}
     \includegraphics[height=10cm]{Experimental_Analytical_Simulation.jpeg} \\
   \end{tabular}\\
-  \renewcommand{\figurename}{Fig.}
+  \renewcommand{\figurename}{Рис.}
   \parbox{150mm}{
     \caption{\centering
       Симуляционное симулирование (оранжевая линия с точками), аналитическое вычисление (синяя сплошная линия) и експерементально полученные данные на сервере Kubernetes (зелёные х). В связи в тяжестю вычисления $k!$ количество кгнтейнеров ументшено до 300.
