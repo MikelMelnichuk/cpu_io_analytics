@@ -50,7 +50,7 @@
 \section{Model}
 
 
-The paper \cite{Melnichuk2026Analysis} provided an experimental testbed designed to emulate a queuing system within the currently used containerized orchestration framework of Kubernetes. The system architecture, as shown in Figure \ref{fig:Experimental_Setup}, consists of a dedicated Proxmox hypervisor server (with its own hardware) hosting a Kubernetes cluster with two nodes (one primary and one secondary node). The above setup ensures resource isolation and repeatability. A continuous stream of incoming requests, assumed to follow a Poisson process with intensity, is directed to the cluster. The Load Balancer is then responsible for distributing the request stream in a first in first out (FIFO) manner.
+The paper \cite{Melnichuk2026Analysis} provided an experimental testbed designed to emulate a queuing system within the currently used containerized orchestration framework of Kubernetes. The system architecture, as shown in Figure \ref{fig:Experimental_Setup}, consists of a dedicated Proxmox hypervisor server (with its own hardware) hosting a Kubernetes cluster with two nodes (one primary and one secondary node). The above setup ensures resource isolation and repeatability. A continuous stream of incoming requests, assumed to follow a Poisson process with intensity $\lambda$, is directed to the cluster. The Load Balancer is then responsible for distributing the request stream in a first in first out (FIFO) manner.
 
 The core microservice was implemented as a single, stateless Docker container image capable of processing both request types: CPU bound and I/O bound inquiries all with service time. The system is scaled horizontally by instantiating n identical replicas (pods/microservices) of this container, which function as s homogeneous servers in the model. The Kubernetes scheduler was responsible for distributing these pods across the available cluster nodes.
 
@@ -69,7 +69,7 @@ The core microservice was implemented as a single, stateless Docker container im
   \vspace{-1\baselineskip}
 \end{figure}
 
-The system was modeled as a queue with a state transition diagram illustrated in Figure \ref{fig:State_Transition_Graph}. Each state  denotes the presence of  queries in the system. The queue is unlimited, which means that the number of requests in the system can be less or more than the number of containers.
+The system was modeled as a queue with a state transition diagram illustrated in Figure \ref{fig:State_Transition_Graph}. Each state $S_i$ denotes the presence of $i$ queries in the system. The queue is unlimited, which means that the number of requests in the system can be less or more than the number of containers.
 
 \begin{figure}[!htbp]
   \centering\small
@@ -85,7 +85,7 @@ The system was modeled as a queue with a state transition diagram illustrated in
   \vspace{-1\baselineskip}
 \end{figure}
 
-The workload was characterized by a mixed distribution of requests. The key independent variable in this study was alpha ($\alpha$), defined as the proportion of requests that are CPU bound. Consequently, the proportion of I/O bound requests was ($1-\alpha$). The arrival process followed a Poisson distribution with intensity $\lambda$ and the service rate $\mu$ was a function of $n$ (number of containers), $\alpha$ (proportion of CPU bound requests), and $i$ (number of requests present in system). The problem with this assumption in practice is that to incorporate the state dependent nature of $\mu$, there is a need to model $\mu\left(n,\alpha,n\right)$ for each $i$, which is impossible for a system of such scale.
+The workload was characterized by a mixed distribution of requests. The key independent variable in this study was alpha ($\alpha$), defined as the proportion of requests that are CPU bound. Consequently, the proportion of I/O bound requests was ($1-\alpha$). The arrival process followed a Poisson distribution with intensity $\lambda$ and the service rate $\mu\left(n,\alpha, n, i\right)$ was a function of $n$ (number of containers), $\alpha$ (proportion of CPU bound requests), and $i$ (number of requests present in system). The problem with this assumption in practice is that to incorporate the state dependent nature of $\mu$, there is a need to model $\mu\left(n,\alpha,n\right)$ for each $i$, which is impossible for a system of such scale.
 
 For this reason, in this paper, a smooth function $\mu^{*}\left(n,\alpha,n\right)$ is fitted with polynomial regression so that we can predict the average service rate for any unseen $(n,\alpha)$ without having to account for $i$. The service rate function was interpolated using the empirical data gathered on the experimental setup. This was done by implying that for each datapoint $(n,\alpha)$ the service rate is approximately $\frac{1}{\frac{1}{N}\sum_{r=0}^{N} T_{n,\alpha}(r)}$, for a big enough $N$. Where $T_{n,\alpha}(r)$ is the measured service time of request number $r$ (for a given $n$ and $\alpha$), and $N$ is the number of requests sent to the system. These measurements implicitly accounts for overhead of Kubernetes, load balancing, and the effect of $\alpha$ on the service rate.
 
