@@ -119,22 +119,31 @@ For this reason, in this paper, a smooth function $\mu^{*}\left(n,\alpha,n\right
 
 Среднее число запросов, находящихся на обслуживание $L_N$ и в очереди $L_Q$, найдем в виде:
 \begin{equation}
-  L_N =\sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu^{*}(n,\alpha)}p_0+\frac{\lambda^{n+1}}{\left(n-1\right)!\cdot\prod_{i=1}^{n}\mu^{*}(n,\alpha)\cdot\left(n\mu^{*}(n,\alpha)-\lambda\right)}p_0
+  L_N =
+  \sum_{k=1}^{n} \frac{\rho^k} {(k-1)!}
+  p_0
+  +\frac{\lambda \rho^n} {\left(n-1\right)! \cdot \left(n\mu^{*}(n,\alpha)-\lambda\right)}
+  p_0
 \end{equation}
 
 \begin{equation}
-  L_Q=\frac{\mu^{*}(n,\alpha)\lambda^{n+1}}{\left(n-1\right)!\cdot\prod_{i=1}^{n}\mu^{*}(n,\alpha)\left(n\mu^{*}(n,\alpha)-\lambda\right)^2}p_0
+  L_Q =
+  \frac{\lambda^2 \rho^{n-1}}
+  {\left(n-1\right)!\left(n\mu^{*}(n,\alpha)-\lambda\right)^2}
+  p_0
 \end{equation}
 
 Среднее общее время нахождения в системе $T$ составляет:
 \begin{align}
-  T & = \sum_{k=1}^{n}\frac{k\lambda^{k-1}}{k!\prod_{i=1}^{k}\mu^{*}(n,\alpha)}p_0 + \nonumber                                                                                                                    \\
-    & + \frac{\lambda^n}{\left(n-1\right)!\cdot\prod_{i=1}^{n}{\mu^{*}(n,\alpha)\cdot\left(n\mu^{*}(n,\alpha)-\lambda\right)}}\left(1+\frac{\mu^{*}(n,\alpha)}{\left(n\mu^{*}(n,\alpha)-\lambda\right)}\right)p_0
+  T & = \frac{L_N + L_Q}{\lambda} =  \sum_{k=1}^{n} \frac{\rho^{k-1}} {(k-1)!\mu^{*}(n,\alpha)} p_0 + \nonumber \\
+    & + \frac{\rho^{n-1}}
+  {\left(n-1\right)! \left(n\mu^{*}(n,\alpha)-\lambda\right)}
+  \left( \rho + \frac{\lambda}
+  {n\mu^{*}(n,\alpha)-\lambda} \right)
+  p_0
   \label{eq:T}
 \end{align}
 
-
-% L=\sum_{k=1}^{n}\frac{k\lambda^k}{k!\prod_{i=1}^{k}\mu^{*}(n,\alpha)}p_0+\frac{\lambda^{n+1}}{\left(n-1\right)!\cdot\prod_{i=1}^{n}{\mu^{*}(n,\alpha)\cdot\left(n\mu^{*}(n,\alpha)-\lambda\right)}}\left(1+\frac{\mu^{*}(n,\alpha)}{\left(n\mu^{*}(n,\alpha)-\lambda\right)}\right)p_0
 
 % T=\frac{L}{\lambda}=\sum_{k=1}^{n}\frac{k\lambda^{\mathbit{k}-\mathbf{1}}}{k!\prod_{i=1}^{k}\mu^{*}(n,\alpha)}p_0+\frac{\lambda^\mathbit{n}}{\left(n-1\right)!\cdot\prod_{i=1}^{n}{\mu^{*}(n,\alpha)\cdot\left(n\mu^{*}(n,\alpha)-\lambda\right)}}\left(1+\frac{\mu^{*}(n,\alpha)}{\left(n\mu^{*}(n,\alpha)-\lambda\right)}\right)p_0
 
