@@ -535,3 +535,6 @@ wget-log*
 # local datadases
 *.csv
 *.csv#
+
+# Ignore local readmes
+*.md
