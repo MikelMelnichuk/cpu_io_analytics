@@ -1,0 +1,184 @@
+\documentclass[12pt]{article}
+
+% --- Options passed, but may be ignored if paper loads biblatex with explicit options ---
+\PassOptionsToPackage{backend=biber, style=numeric, sorting=none}{biblatex}
+
+\usepackage{paper,math}
+
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian,english]{babel}
+\usepackage{csquotes}
+
+\addbibresource{references.bib}
+
+\hfuzz=30pt % Suppresses warnings for lines up to 20pt too wide
+\sloppy
+
+\title{Title}
+\author{
+  Мельничук Михаил\\ {\itshape\large Университет ИТМО}
+}
+\date{\today}
+
+\hypersetup{
+  pdftitle = {Example Paper Title},
+  pdfauthor = {Author One, Author Two},
+}
+
+\booltrue{INCLUDECOMMENTS}
+\newcommand{\kyle}[1]{\coauthorComment[Kyle]{#1}}
+
+\begin{document}
+
+% Title Page
+\maketitle
+\begin{abstract}
+  Abstract text
+
+  \par\vspace{-2.5mm}
+\end{abstract}
+
+\newpage
+
+% ##################################################################################################
+\section{Introduction}
+
+Будет написано далее.
+
+% ##################################################################################################
+\section{Model}
+
+
+The paper \cite{Melnichuk2026Analysis} provided an experimental testbed designed to emulate a queuing system within the currently used containerized orchestration framework of Kubernetes. The system architecture, as shown in Figure \ref{fig:Experimental_Setup}, consists of a dedicated Proxmox hypervisor server (with its own hardware) hosting a Kubernetes cluster with two nodes (one primary and one secondary node). The above setup ensures resource isolation and repeatability. A continuous stream of incoming requests, assumed to follow a Poisson process with intensity, is directed to the cluster. The Load Balancer is then responsible for distributing the request stream in a first in first out (FIFO) manner.
+
+The core microservice was implemented as a single, stateless Docker container image capable of processing both request types: CPU bound and I/O bound inquiries all with service time. The system is scaled horizontally by instantiating n identical replicas (pods/microservices) of this container, which function as s homogeneous servers in the model. The Kubernetes scheduler was responsible for distributing these pods across the available cluster nodes.
+
+\graphicspath{{Melnichuk_Figs/}}
+\begin{figure}[!htbp]
+  \centering\small
+  \begin{tabular}{cp{10mm}c}
+    \includegraphics[height=5cm]{Experimental_Setup.jpeg} \\
+  \end{tabular}\\
+  \renewcommand{\figurename}{Fig.}
+  \parbox{150mm}{
+    \caption{\centering
+      Experimental setup with a two node Kubernetes cluster, within a Proxmox server with its own dedicated hardware. The cluster includes a Load Balancer for request distribution and stateless microservice containers that process the incoming requests.
+    }
+    \label{fig:Experimental_Setup}}
+  \vspace{-1\baselineskip}
+\end{figure}
+
+The system was modeled as a queue with a state transition diagram illustrated in Figure \ref{fig:State_Transition_Graph}. Each state  denotes the presence of  queries in the system. The queue is unlimited, which means that the number of requests in the system can be less or more than the number of containers.
+
+\begin{figure}[!htbp]
+  \centering\small
+  \begin{tabular}{cp{10mm}c}
+    \includegraphics[height=1.3cm]{State_Transition_Graph.jpeg} \\
+  \end{tabular}\\
+  \renewcommand{\figurename}{Fig.}
+  \parbox{150mm}{
+    \caption{\centering
+      State transition diagram of the system investigated.
+    }
+    \label{fig:State_Transition_Graph}}
+  \vspace{-1\baselineskip}
+\end{figure}
+
+The workload was characterized by a mixed distribution of requests. The key independent variable in this study was alpha ($\alpha$), defined as the proportion of requests that are CPU bound. Consequently, the proportion of I/O bound requests was ($1-\alpha$). The arrival process followed a Poisson distribution with intensity $\lambda$ and the service rate $\mu$ was a function of $n$ (number of containers), $\alpha$ (proportion of CPU bound requests), and $i$ (number of requests present in system). The problem with this assumption in practice is that to incorporate the state dependent nature of $\mu$, there is a need to model $\mu\left(n,\alpha,n\right)$ for each $i$, which is impossible for a system of such scale.
+
+For this reason, in this paper, a smooth function $\mu^{*}\left(n,\alpha,n\right)$ is fitted with polynomial regression so that we can predict the average service rate for any unseen $(n,\alpha)$ without having to account for $i$. The service rate function was interpolated using the empirical data gathered on the experimental setup. This was done by implying that for each datapoint $(n,\alpha)$ the service rate is approximately $\frac{1}{\frac{1}{N}\sum_{r=0}^{N} T_{n,\alpha}(r)}$, for a big enough $N$. Where $T_{n,\alpha}(r)$ is the measured service time of request number $r$ (for a given $n$ and $\alpha$), and $N$ is the number of requests sent to the system. These measurements implicitly accounts for overhead of Kubernetes, load balancing, and the effect of $\alpha$ on the service rate.
+
+Отметим как $\rho=\frac{\lambda}{\mu^{*}(n,\alpha)}$.
+
+Вероятность отсутствия запросов в системе $p_0$:
+\begin{equation}
+  p_0=\left(
+  1
+  + \sum_{i=1}^{n}\left(\frac{\rho^{i}}{i!}\right)
+  +\frac{\lambda\rho^{n}}{n! \cdot \left(n\mu^{*}(n,\alpha)-\lambda\right)}
+  \right)^{-1}
+  \label{eq:p0}
+\end{equation}
+
+Вероятность присутствия $k$ запросов в системе $p_k$:
+\begin{equation}
+  p_k = \left\{ \begin{array}{ll}
+    \frac{\rho^{k}}{k!} \, p_0         & \text{for } k \leq n \\[11pt]
+    \frac{\rho^{k}}{n! n^{k-n}} \, p_0 & \text{for } k > n
+  \end{array} \right.
+  \label{eq:p_k}
+\end{equation}
+
+Вероятность того, что хотя бы один запрос находится в очереди $p_Q$
+\begin{equation}
+  p_Q=\frac{\lambda\rho^{n}} {n!\cdot\left(n\mu^{*}(n,\alpha)-\lambda\right)} p_0
+  \label{eq:p_Q}
+\end{equation}
+
+
+Average queue size:
+\begin{equation}
+  L_N =
+  \sum_{k=1}^{n} \frac{\rho^k} {(k-1)!}
+  p_0
+  +\frac{\lambda \rho^n} {\left(n-1\right)! \cdot \left(n\mu^{*}(n,\alpha)-\lambda\right)}
+  p_0
+  \label{eq:L_N}
+\end{equation}
+
+\begin{equation}
+  L_Q =
+  \frac{\lambda^2 \rho^{n-1}}
+  {\left(n-1\right)!\left(n\mu^{*}(n,\alpha)-\lambda\right)^2}
+  p_0
+  \label{eq:L_Q}
+\end{equation}
+
+Среднее общее время нахождения в системе $T$ составляет:
+\begin{align}
+  T & = \frac{L_N + L_Q}{\lambda} =  \sum_{k=1}^{n} \frac{\rho^{k-1}} {(k-1)!\mu^{*}(n,\alpha)} p_0 + \nonumber \\
+    & + \frac{\rho^{n-1}}
+  {\left(n-1\right)! \left(n\mu^{*}(n,\alpha)-\lambda\right)}
+  \left( \rho + \frac{\lambda}
+  {n\mu^{*}(n,\alpha)-\lambda} \right)
+  p_0
+  \label{eq:T}
+\end{align}
+
+
+
+% ##################################################################################################
+\section{Results}
+
+Далее будет написано.
+\begin{figure}[!htbp]
+  \centering\small
+  \begin{tabular}{cp{10mm}c}
+    \includegraphics[height=10cm]{Experimental_Analytical_Simulation.jpeg} \\
+  \end{tabular}\\
+  \renewcommand{\figurename}{Fig.}
+  \parbox{150mm}{
+    \caption{\centering
+      Симуляционное симулирование (оранжевая линия с точками), аналитическое вычисление (синяя сплошная линия) и експерементально полученные данные на сервере Kubernetes (зелёные х). В связи в тяжестю вычисления $k!$ количество кгнтейнеров ументшено до 300.
+    }
+    \label{Mel_fig_System_States}}
+  \vspace{-1\baselineskip}
+\end{figure}
+
+
+
+% ##################################################################################################
+\section{Discussion}
+Далее будет написано.
+
+
+% ##################################################################################################
+\section{Conclusion}
+
+Далее будет написано.
+
+% ##################################################################################################
+\printbibliography[title={References}]
+
+\end{document}
