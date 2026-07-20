@@ -1,6 +1,5 @@
 \documentclass[12pt]{article}
 
-% --- Options passed, but may be ignored if paper loads biblatex with explicit options ---
 \PassOptionsToPackage{backend=biber, style=numeric, sorting=none}{biblatex}
 
 \usepackage{paper,math}
@@ -29,6 +28,7 @@
 
 \begin{document}
 
+% ##################################################################################################
 % Title Page
 \maketitle
 \begin{abstract}
@@ -73,78 +73,79 @@ The arrival process followed a Poisson distribution with intensity $\lambda$ and
 
 The stationary state is guaranteed when $\lambda < n\mu(n, \alpha)$, otherwise the queue size will infinitely grow.
 
-Define $r=\frac{\lambda}{\mu(n,\alpha)}$.
-
 The probability of finding the system empty (with zero requests) $p_0$:
 \begin{equation}
-  p_0^{(n, \alpha)}=\left(
+  p_0=\left(
   1
-  + \sum_{i=1}^{n}\left(\frac{r^{i}}{i!}\right)
-  +\frac{\lambda r^{n}}{n! \cdot \left(n \mu(n, \alpha) - \lambda\right)}
-  \right)^{-1}
+  + \sum_{w=1}^{n}\left(\frac{\lambda^w}{w! \prod_{i=1}^{w}\mu\left(n,\alpha,i\right)}\right)
+  +\frac{\lambda^{n+1}}{n! \prod_{i=1}^{n}\mu\left(n,\alpha,i\right) \left(n\mu\left(n,\alpha,n\right)-\lambda\right)}
+  \right)^{-1};
   \label{eq:p0}
 \end{equation}
 
-The probability of having $k$ requests in the system $p_k$:
+
+Вероятность присутствия $i$ запросов в системе $p_k$:
 \begin{equation}
-  p_k^{(n, \alpha)} = \left\{ \begin{array}{ll}
-    \frac{r^{k}}{k!} \, p_0         & \text{for } k \leq n \\[11pt]
-    \frac{r^{k}}{n! n^{k-n}} \, p_0 & \text{for } k > n
+  p_i = \left\{ \begin{array}{ll}
+    \frac{\lambda^{i}}{i! \prod_{i=1}^{i}\mu\left(n,\alpha,i\right)} \, p_0                                                & \text{for } i \leq n, \\[11pt]
+    \frac{\lambda^{i}}{n! \prod_{i=1}^{n}\mu\left(n,\alpha,i\right) \left(n\mu\left(n,\alpha,n\right)\right)^{i-n}} \, p_0 & \text{for } i > n.
   \end{array} \right.
   \label{eq:p_k}
 \end{equation}
 
-The probability of having at least one request in the queue $p_Q$:
+Вероятность того, что хотя бы один запрос находится в очереди $p_Q$
 \begin{equation}
-  p_Q^{(n, \alpha)} = \frac{\lambda r^{n}} {n!\cdot\left(n\mu(n, \alpha)-\lambda \right)} p_0
+  p_Q=\frac{\lambda^{n+1}} {n! \prod_{i=1}^{n}\mu\left(n,\alpha,i\right) \left(n\mu(n,\alpha,n)-\lambda\right)} p_0.
   \label{eq:p_Q}
 \end{equation}
 
-Average queue size:
+
+Среднее число запросов, находящихся на обслуживание $L_N$ и в очереди $L_Q$, найдем в виде:
 \begin{equation}
-  L_N^{(n, \alpha)} =
-  \sum_{k=1}^{n} \frac{r^k} {(k-1)!}
-  p_0
-  +\frac{r^n} {\left(n-1\right)!} \left(\frac{\lambda}{n\mu(n, \alpha)-\lambda}\right)
-  p_0
-  \label{eq:L_N}
+  L_N = \sum_{w=1}^{n} \frac{w\lambda^w}{w!\prod_{i=1}^{w}\mu\left(n,\alpha,i\right)} p_0
+  +\frac{\lambda^{n+1}}{\left(n-1\right)! \prod_{i=1}^{n}\mu\left(n,\alpha,i\right) \left(n\mu\left(n,\alpha,n\right)-\lambda\right)} p_0
 \end{equation}
 
-Average waiting queue size:
 \begin{equation}
-  L_Q^{(n, \alpha)} =
-  \frac{r^{n+1}}
-  {n!n}
-  \left(\frac{1}{1 - \frac{r}{n} }\right)^2
-  p_0
-  \label{eq:L_Q}
+  L_Q=\frac{\lambda^{n+1}} {\left(n-1\right)! \prod_{i=1}^{n-1}\mu\left(n,\alpha,i\right)\left(n\mu\left(n,\alpha,n\right)-\lambda\right)^2} p_0
 \end{equation}
 
-Average waiting time in the system:
+Среднее общее время нахождения в системе $T$ составляет:
 \begin{align}
-  T^{(n, \alpha)} & = \frac{L_N^{(n, \alpha)} + L_Q^{(n, \alpha)}}{\lambda} =  \sum_{k=1}^{n} \frac{r^{k-1}} {(k-1)!\mu(n, \alpha)} p_0 + \nonumber \\
-                  & + \frac{r^{n-1}}
-  {\left(n-1\right)! \left(n\mu(n, \alpha)-\lambda\right)}
-  \left( r + \frac{\lambda}
-    {n\mu(n, \alpha)-\lambda} \right)
-  p_0
+  T & = \frac{L_N + L_Q}{\lambda}= \sum_{w=1}^{n} \frac{w\lambda^{w-1}}{w!\prod_{i=1}^{w}\mu\left(n,\alpha,i\right)} p_0 + \nonumber                                                                                                          \\
+    & + \frac{\lambda^n}{\left(n-1\right)! \prod_{i=1}^{n}{\mu\left(n,\alpha,i\right) \left(n\mu\left(n,\alpha,n\right)-\lambda\right)}}\left(1+\frac{\mu\left(n,\alpha,n\right)}{\left(n\mu\left(n,\alpha,n\right)-\lambda\right)}\right)p_0
   \label{eq:T}
 \end{align}
 
 % ##################################################################################################
 \section{Results}
 
-To analytically test the given queuing model, a smooth function is fitted with polynomial regression so that we can predict the average service rate for any unseen $(n,\alpha)$ without having to account for $i$. The service rate function was interpolated using the empirical data gathered on the experimental setup. This was done by implying that for each datapoint $(n,\alpha)$ the service rate is approximately $\frac{1}{\bar{T}_{round}}$ where $\bar{T}_{round}$ is the measured mean service time for a given $n$ and $\alpha$. These measurements implicitly account for overhead of Kubernetes, load balancing, and the effect of $\alpha$ on the service rate.
+To analytically validate the proposed queuing model, we employ polynomial regression to fit a smooth function that predicts the average service rate for any unseen configuration $(n, \alpha)$, effectively decoupling the service rate from the system state $i$. Using empirical data gathered from the experimental testbed, we estimate the service rate for each $(n, \alpha)$ data point as $\mu(n, \alpha) \approx 1/\bar{T}_{round}$, where $\bar{T}_{round}$ is the measured mean service time. The continuous service rate function derived from this polynomial regression is then explicitly utilized as the intensity (rate parameter) of the Poisson process governing the service times. Because $\bar{T}_{round}$ is derived from end to end empirical measurements, this approach implicitly accounts for Kubernetes orchestration overhead, load balancing latency, and the specific performance impact of the workload mix $\alpha$.
+
+% do not specify the degree of the polynomial or how you prevent overfitting (e.g., cross validation, regularization)
+% You must include goodness-of-fit metrics (e.g., R2R2, RMSE, residual plots).
 
 
-To analytically validate the proposed queuing model, we employ polynomial regression to fit a smooth function that predicts the average service rate for any unseen configuration $(n, \alpha)$, effectively decoupling the service rate from the system state $i$. Using empirical data gathered from the experimental testbed, we estimate the service rate for each $(n, \alpha)$ data point as $\mu \approx 1/\bar{T}_{round}$, where $\bar{T}_{round}$ is the measured mean service time. The continuous service rate function derived from this polynomial regression is then explicitly utilized as the intensity (rate parameter) of the Poisson process governing the service times. Because $\bar{T}_{round}$ is derived from end to end empirical measurements, this approach implicitly accounts for Kubernetes orchestration overhead, load balancing latency, and the specific performance impact of the workload mix $\alpha$.
+In addition to the analytical method, simulation modeling was conducted to validate the results using SimPy library in python.
 
-\begin{figure}[!htbp]
-  \centering
-  \includegraphics[height=10cm]{Experimental_Analytical_Simulation.jpeg} \\
-  \caption{Симуляционное симулирование (оранжевая линия с точками), аналитическое вычисление (синяя сплошная линия) и экспериментально полученные данные на сервере Kubernetes (зелёные х). В связи в тяжестью вычисления $k!$ количество контейнеров уменьшено до 300.}
-  \label{fig:Mel_fig_System_States}
-\end{figure}
+% the simulation uses the fitted exponential service times, the actual measured service time distribution, or a state dependent service time model
+
+% You must specify the number of replications per configuration, the simulation warm up period, and the confidence intervals for your metrics. Without this, the "validation" is not statistically rigorous.
+
+A full factorial experimental design was employed with parameters that were chosen to ensure that the system transitioned from under provisioned to over provisioned for sufficiently long observation window:
+- Arrival rate $\lambda = 1$.
+- Exponential service times ????.
+- Number of containers $n \in [1, 300]$.
+- Workload mix alpha $\alpha \in {0, 0.2, 0.4, 0.6, 0.8, 1}$.
+- Independent and identically distributed service times across servers.
+
+
+% \begin{figure}[!htbp]
+%   \centering
+%   \includegraphics[height=10cm]{Experimental_Analytical_Simulation.jpeg} \\
+%   \caption{Симуляционное моделирование (оранжевая линия с точками), аналитическое вычисление (синяя сплошная линия) и экспериментально полученные данные на сервере Kubernetes (зелёные х). В связи в тяжестью вычисления $k!$ количество контейнеров уменьшено до 300.}
+%   \label{fig:Mel_fig_System_States}
+% \end{figure}
 
 % ##################################################################################################
 \section{Discussion}
