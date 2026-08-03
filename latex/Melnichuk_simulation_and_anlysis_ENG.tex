@@ -152,8 +152,8 @@ This is the place to explain why the estimation of method 1 is inconsistent with
 \begin{figure}[!htbp]
   \centering
   \includegraphics[height=10cm]{naive_mu_prediction.png} \\
-  \caption{Аналитическое моделирование системы на основе среднего времени обслуживания измеренного в контейнерах}
-  \label{fig:naive_mu_prediction}
+  \caption{Аналитическое моделирование системы на основе среднего времени обслуживания измеренного в контейнерах, средний показатель качества по всем альфам описан в таблице \ref{tab:polynomial_model_metrics}}
+  \label{fig:naive_model_metrics}
 \end{figure}
 
 The problem is that on the container level one does not feel the overheads associated with waiting in the queue and load balancing.
@@ -161,7 +161,7 @@ The problem is that on the container level one does not feel the overheads assoc
 \begin{table}[htbp]
   \centering
   \caption{Model Performance Metrics per $\alpha$}
-  \label{tab:model_metrics}
+  \label{tab:naive_model_metrics}
 
   % Adds a little vertical breathing room between rows
   \renewcommand{\arraystretch}{1.2}
@@ -192,7 +192,7 @@ The problem is that on the container level one does not feel the overheads assoc
 
 % To analytically validate the proposed queuing model,  the service rate $\mu(n, \alpha, i)$ is estimated for each $(n, \alpha, i)$ by the algorithm \ref{alg:mu_eff_pseudo}, where $T_{\text{emp}}^{n, \alpha}(i)$ is the measured mean service time when the system had exactly $i$ requests in the system based on the empirical data gathered from the experimental testbed. The continuous service rate function derived from this approach is then explicitly utilized as the intensity (rate parameter) of the Poisson process governing the service times. Because this updated service rate is derived from end to end empirical measurements, this approach implicitly accounts for all unpredictable overheads like Kubernetes scheduling jitter, load-balancer forwarding delays, network latency, OS interference, and variable processing speeds, and the specific performance impact of the workload mix $\alpha$.
 
-Для того чтобы аналитически проверить предложенную модель СМО $\mu(n, \alpha, i)$ для каждого состояния нужно выявить $(n, \alpha, i)$. где $T_{\text{emp}}^{n, \alpha}(i)$ — это измеренное мэн сервис тайм, когда система имела ровно $i$ реквестов, на базе эмпирикал дат, гезеренных с экспериментального тестбеда. Континуальная функция сервис рейта, деривированная из этого аппроча, затем эксплицитно утилизится как интенсивность (рейт параметр) Пуассоновского процесса, управляющего сервис таймами. Потому что этот апдейтед сервис рейт деривирован из энд-ту-энд эмпирикал мэжурментов, данный аппроч имплицитно акаунтит все непредсказуемые оверхеды, такие как скедулинг джиттер Kubernetes, дилейс форвардинга лоад-балансера, сетевая латентность, интерферен от ОС, и вариативные процессинг спидс, а также специфическое перфоманс влияние ворклоад микса $\alpha$.
+Для того чтобы аналитически проверить предложенную модель СМО $\mu(n, \alpha, i)$ для каждого состояния нужно выявить $(n, \alpha, i)$. где $T_{\text{emp}}^{n, \alpha}(i)$ это измеренное мэн сервис тайм, когда система имела ровно $i$ реквестов, на базе эмпирикал дат, гезеренных с экспериментального тестбеда. Континуальная функция сервис рейта, деривированная из этого аппроча, затем эксплицитно утилизится как интенсивность (рейт параметр) Пуассоновского процесса, управляющего сервис таймами. Потому что этот апдейтед сервис рейт деривирован из энд-ту-энд эмпирикал мэжурментов, данный аппроч имплицитно акаунтит все непредсказуемые оверхеды, такие как скедулинг джиттер Kubernetes, дилейс форвардинга лоад-балансера, сетевая латентность, интерферен от ОС, и вариативные процессинг спидс, а также специфическое перфоманс влияние ворклоад микса $\alpha$.
 
 Идея предложенной кусочно заданной формулы приближения времени обслуживания \ref{eq:mu_eff} заключается в том, чтобы включить в себя все непредсказуемые задержки, такие как сетевая нагрузка, обработка прокси и задержки планирования Kubernetes в одну единственную, калиброванную скорость обслуживания $\mu(n, \alpha, i)$ при $i$ запросов в системе, $n$ контейнеров и параметра $\alpha$.
 
@@ -225,12 +225,27 @@ The problem is that on the container level one does not feel the overheads assoc
 %     \State \Return $\mu_{\text{eff}}$
 %   \end{algorithmic}
 % \end{algorithm}
-% do not specify the degree of the polynomial or how you prevent overfitting (e.g., cross validation, regularization)
+
+Чтобы избежать переобучения и получить объективную оценку обобщающей способности модели, мы разделили данные по прогонам, а не по отдельным запросам. Каждый прогон представляет собой независимый эксперимент с фиксированными $(n,\alpha)$ и 500 запросами. Мы случайным образом назначили 80\% прогонов в обучающую выборку, а оставшиеся 20\% являлись тестовой. Такой подход гарантирует, что конфигурации $(n,\alpha)$ из теста не использовались при обучении, и модель не видела запросы из тех же экспериментов. Далее из всех прогонов обучающей выборки были выявлены $\mu_{\mathrm{eff}}(n, \alpha, i)$ под каждую $(n, \alpha, i)$ используя пормулу \ref{eq:mu_eff}.
+
+В качестве регрессионной модели мы выбрали линейную регрессию на полиномиальных признаках. Это классический и интерпретируемый метод, который даёт аналитическое решение и не требует подбора гиперпараметров (кроме степени полинома). Мы использовали реализацию из библиотеки scikit‑learn с методом наименьших квадратов. Полином второй степени позволяет моделировать нелинейные зависимости и взаимодействия между факторами, что важно, поскольку влияние числа серверов и загрузки на эффективную интенсивность не является линейным.
+
+Перед построением полиномиальных признаков мы стандартизировали исходные признаки (вычитание среднего и деление на стандартное отклонение), чтобы избежать численных проблем из‑за разных масштабов переменных (например, $n$ может достигать сотен, а $\alpha$ находится в $[0,1]$).
+
+На рис \ref{fig:naive_mu_prediction} можно увидеть кривую предсказания регрессионной модели(фиолетовым) и фактическое время измеренное на экспериментальном стенде (чёрным), а также можете увидеть метрики качества в таблице \ref{tab:polynomial_model_metrics}.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[height=10cm]{polynom_2_degree_prediction_compare.png} \\
+  \caption{Измеренное время обслуживания (Empirical) и предсказанная полиномиальной моделью, средний показатель качества по всем альфам описан в таблице \ref{tab:polynomial_model_metrics}}
+  \label{fig:naive_mu_prediction}
+\end{figure}
+
 
 \begin{table}[htbp]
   \centering
   \caption{Model Performance Metrics per $\alpha$}
-  \label{tab:model_metrics}
+  \label{tab:polynomial_model_metrics}
 
   % Adds a little vertical breathing room between rows
   \renewcommand{\arraystretch}{1.2}
@@ -269,7 +284,7 @@ A full factorial experimental design was employed with parameters that were chos
 - Arrival rate $\lambda = 1$.
 - Exponential service times ????.
 - Number of containers $n \in [1, 300]$.
-- Workload mix alpha $\alpha \in {0, 0.2, 0.4, 0.6, 0.8, 1}$.
+- Workload mix alpha $\alpha \in \{0, 0.2, 0.4, 0.6, 0.8, 1\}$.
 - Independent and identically distributed service times across servers.
 
 
