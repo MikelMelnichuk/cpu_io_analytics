@@ -232,15 +232,21 @@ The problem is that on the container level one does not feel the overheads assoc
 
 Перед построением полиномиальных признаков мы стандартизировали исходные признаки (вычитание среднего и деление на стандартное отклонение), чтобы избежать численных проблем из‑за разных масштабов переменных (например, $n$ может достигать сотен, а $\alpha$ находится в $[0,1]$).
 
-На рис \ref{fig:naive_mu_prediction} можно увидеть кривую предсказания регрессионной модели(фиолетовым) и фактическое время измеренное на экспериментальном стенде (чёрным), а также можете увидеть метрики качества в таблице \ref{tab:polynomial_model_metrics}.
+На рис \ref{fig:polynom_2_degree_prediction_compare} можно увидеть кривую предсказания регрессионной модели(фиолетовым) и фактическое время измеренное на экспериментальном стенде (чёрным), а также можете увидеть метрики качества в таблице \ref{tab:polynomial_model_metrics}.
 
 \begin{figure}[!htbp]
   \centering
   \includegraphics[height=10cm]{polynom_2_degree_prediction_compare.png} \\
   \caption{Измеренное время обслуживания (Empirical) и предсказанная полиномиальной моделью, средний показатель качества по всем альфам описан в таблице \ref{tab:polynomial_model_metrics}}
-  \label{fig:naive_mu_prediction}
+  \label{fig:polynom_2_degree_prediction_compare}
 \end{figure}
 
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[height=10cm]{polynom_2_degree_prediction_compare_smooth.png} \\
+  \caption{Измеренное время обслуживания (Empirical) и предсказанная полиномиальной моделью, средний показатель качества по всем альфам описан в таблице \ref{tab:polynomial_model_metrics}, для наглядности был применён savgol filter из библиотеки scipy на обе кривые}
+  \label{fig:polynom_2_degree_prediction_compare_smooth}
+\end{figure}
 
 \begin{table}[htbp]
   \centering
