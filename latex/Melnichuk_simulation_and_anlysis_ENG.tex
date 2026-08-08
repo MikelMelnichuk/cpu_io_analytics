@@ -313,7 +313,7 @@ Average performance metrics (across all $\alpha$) vs. minimum sample count
 
 
 \subsection{Simulation Modeling of the queuing system}
-In addition to the analytical method, simulation modeling was conducted to validate the results using SimPy library in python.
+% In addition to the analytical method, simulation modeling was conducted to validate the results using SimPy library in python.
 
 В рамках данного исследования была разработана имитационная модель предложенной СМО в среде Simpy с зависящей от состояния интенсивностью обслуживания $\mu(n, \alpha, i)$. Для верификации модели проведено сравнение с экспериментальными данными, полученными на кластере Kubernetes, а также с аналитическим решением, выведенным на основе формул стационарного распределения вероятностей состояний.
 
@@ -332,69 +332,98 @@ In addition to the analytical method, simulation modeling was conducted to valid
 % - Independent and identically distributed service times across servers.
 
 
-\begin{figure}[!htbp]
-  \centering
-  \includegraphics[height=10cm]{analytical_vs_simulations.png} \\
-  \caption{Симуляционное моделирование Sim 1k, Sim 2k, Sim 5k, аналитическое вычисление (синяя сплошная линия) и экспериментально полученные данные на сервере Kubernetes (зелёные х).}
-  \label{fig:Mel_fig_System_States}
-\end{figure}
+% In preamble, make sure you have:
+% \usepackage{booktabs, graphicx}
 
 \begin{table}[htbp]
   \centering
-  \caption{Average (across $\alpha$) -- Simulation vs Empirical and Simulation vs Analytical}
-  \label{tab:average_alpha_sim_vs_emp_analytical}
+  \caption{Simulation vs.\ Empirical and Analytical Performance (average across $\alpha$)}
+  \label{tab:sim_vs_empirical_and_analytical}
 
   % Adds a little vertical breathing room between rows
   \renewcommand{\arraystretch}{1.2}
 
-  \begin{tabular}{l r r r r r r}
-    \toprule
-     & \multicolumn{3}{c}{Simulation vs Empirical} & \multicolumn{3}{c}{Simulation vs Analytical} \\
-    \cmidrule(lr){2-4} \cmidrule(l){5-7}
-    Config
-     & \multicolumn{1}{c}{RMSE}
-     & \multicolumn{1}{c}{MAE}
-     & \multicolumn{1}{c}{MAPE (\%)}
-     & \multicolumn{1}{c}{RMSE}
-     & \multicolumn{1}{c}{MAE}
-     & \multicolumn{1}{c}{MAPE (\%)}                                                              \\
-    \midrule
-    Sim 1k
-     & 0.046517
-     & 0.034948
-     & 3.132380
-     & 0.020594
-     & 0.015854
-     & 1.454926                                                                                   \\
-    Sim 2k
-     & 0.042892
-     & 0.033014
-     & 2.973859
-     & 0.020005
-     & 0.014893
-     & 1.365564                                                                                   \\
-    Sim 5k
-     & 0.042358
-     & 0.033007
-     & 2.967847
-     & 0.019507
-     & 0.014632
-     & 1.337648                                                                                   \\
-    \bottomrule
-  \end{tabular}
+  \footnotesize
+
+  % If the table is too wide, this scales it to fit the column/page width.
+  % If you do not want automatic scaling, remove this \resizebox wrapper
+  % and the corresponding closing brace after \end{tabular}.
+  \resizebox{\linewidth}{!}{%
+    \begin{tabular}{@{}lccc@{}}
+      \toprule
+      Simulation size & \multicolumn{1}{c}{RMSE}     & \multicolumn{1}{c}{MAE} & \multicolumn{1}{c}{MAPE (\%)} \\
+      \midrule
+
+      \multicolumn{4}{@{}l}{\textbf{SIMULATION vs EMPIRICAL (average across $\alpha$)}}                        \\
+      \midrule
+      Sim 0.5k
+                      & 0.0465 ($\pm$0.0406--0.0523)
+                      & 0.0364 ($\pm$0.0316--0.0412)
+                      & 3.28\% ($\pm$3.06\%--3.50\%)                                                           \\
+
+      Sim 1k
+                      & 0.0439 ($\pm$0.0384--0.0493)
+                      & 0.0344 ($\pm$0.0293--0.0395)
+                      & 3.09\% ($\pm$2.84\%--3.34\%)                                                           \\
+
+      Sim 2k
+                      & 0.0428 ($\pm$0.0373--0.0483)
+                      & 0.0335 ($\pm$0.0284--0.0385)
+                      & 3.01\% ($\pm$2.75\%--3.26\%)                                                           \\
+
+      Sim 5k
+                      & 0.0416 ($\pm$0.0359--0.0473)
+                      & 0.0325 ($\pm$0.0272--0.0377)
+                      & 2.92\% ($\pm$2.63\%--3.20\%)                                                           \\
+
+      \midrule
+
+      \multicolumn{4}{@{}l}{\textbf{SIMULATION vs ANALYTICAL (average across $\alpha$)}}                       \\
+      \midrule
+      Sim 0.5k
+                      & 0.0218 ($\pm$0.0197--0.0238)
+                      & 0.0174 ($\pm$0.0157--0.0190)
+                      & 1.57\% ($\pm$1.50\%--1.65\%)                                                           \\
+
+      Sim 1k
+                      & 0.0158 ($\pm$0.0150--0.0166)
+                      & 0.0125 ($\pm$0.0119--0.0132)
+                      & 1.14\% ($\pm$1.11\%--1.18\%)                                                           \\
+
+      Sim 2k
+                      & 0.0110 ($\pm$0.0098--0.0122)
+                      & 0.0088 ($\pm$0.0078--0.0098)
+                      & 0.80\% ($\pm$0.76\%--0.84\%)                                                           \\
+
+      Sim 5k
+                      & 0.0069 ($\pm$0.0063--0.0074)
+                      & 0.0055 ($\pm$0.0050--0.0059)
+                      & 0.50\% ($\pm$0.49\%--0.51\%)                                                           \\
+
+      \bottomrule
+    \end{tabular}%
+  }
+
+  \vspace{0.5em}
+
+  \noindent\footnotesize
+  Values are averaged across $\alpha$ and reported as point estimate (uncertainty range).
 \end{table}
 
-% Average (across alpha) – Simulation vs Empirical:
-% Config     RMSE      MAE     MAPE
-% Sim 1k 0.046517 0.034948 3.132380
-% Sim 2k 0.042892 0.033014 2.973859
-% Sim 5k 0.042358 0.033007 2.967847
 
-% Average (across alpha) – Simulation vs Analytical:
-% Config     RMSE      MAE     MAPE
-% Sim 1k 0.020594 0.015854 1.454926
-% Sim 2k 0.020005 0.014893 1.365564
-% Sim 5k 0.019507 0.014632 1.337648
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[height=10cm]{analytical_vs_simulations.png} \\
+  \caption{Симуляционное моделирование Sim 0.5k (оранжевый), Sim 2k (красный) и аналитическое вычисление (синяя сплошная).}
+  \label{fig:Mel_fig_System_States}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[height=10cm]{analytical_vs_simulations_smooth.png} \\
+  \caption{Симуляционное моделирование Sim 0.5k (оранжевый), Sim 2k (красный) и аналитическое вычисление (синяя сплошная). Для лучшего отображения разницы между графами, был применён алгоритм сглаживание Савицкого‑Голея из библиотеки scipy}
+  \label{fig:Mel_fig_System_States}
+\end{figure}
 
 % ##################################################################################################
 \section{Discussion}
