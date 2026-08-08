@@ -56,9 +56,13 @@ To be written later.
 % ##################################################################################################
 \section{Model}
 
-The paper \cite{Melnichuk2026Analysis} provided an experimental testbed designed to emulate a queuing system within the currently used containerized orchestration framework of Kubernetes. The system architecture, as shown in Figure \ref{fig:Experimental_Setup}, consists of a dedicated Proxmox hypervisor server (with its own hardware) hosting a Kubernetes cluster with two nodes (one primary and one secondary node). The above setup ensures resource isolation and repeatability. A continuous stream of incoming requests, assumed to follow a Poisson process with intensity $\lambda$, is directed to the cluster. The Load Balancer is then responsible for distributing the request stream in a Round Robin manner.
+% The paper \cite{Melnichuk2026Analysis} provided an experimental testbed designed to emulate a queuing system within the currently used containerized orchestration framework of Kubernetes. The system architecture, as shown in Figure \ref{fig:Experimental_Setup}, consists of a dedicated Proxmox hypervisor server (with its own hardware) hosting a Kubernetes cluster with two nodes (one primary and one secondary node). The above setup ensures resource isolation and repeatability. A continuous stream of incoming requests, assumed to follow a Poisson process with intensity $\lambda$, is directed to the cluster. The Load Balancer is then responsible for distributing the request stream in a Round Robin manner.
 
-The core microservice was implemented as a single, stateless Docker container image capable of processing both request types: CPU bound and I/O bound inquiries all with service time. The system is scaled horizontally by instantiating n identical replicas (pods/microservices) of this container, which function as $n$ homogeneous servers in the model. The Kubernetes scheduler was responsible for distributing these pods across the available cluster nodes.
+% The core microservice was implemented as a single, stateless Docker container image capable of processing both request types: CPU bound and I/O bound inquiries all with service time. The system is scaled horizontally by instantiating n identical replicas (pods/microservices) of this container, which function as $n$ homogeneous servers in the model. The Kubernetes scheduler was responsible for distributing these pods across the available cluster nodes.
+
+В работе \cite{Melnichuk2026Analysis} представлен экспериментальный стенд, предназначенный для эмуляции системы массового обслуживания в рамках современной платформы оркестрации контейнеров Kubernetes. Архитектура системы, показанная на рис. \ref{fig:Experimental_Setup}, включает выделенный сервер гипервизор Proxmox (с собственным аппаратным обеспечением), на котором развёрнут кластер Kubernetes, состоящий из двух узлов (одного управляющего и одного рабочего). Описанная конфигурация обеспечивает изоляцию ресурсов и воспроизводимость экспериментов. Непрерывный поток входящих запросов, который предполагается пуассоновским с интенсивностью $\lambda$, направляется в кластер. Балансировщик нагрузки (Load Balancer) отвечает за распределение потока запросов по алгоритму Round Robin.
+
+Основной микросервис был реализован в виде единого контейнера Docker без сохранения состояния (stateless), способного обрабатывать запросы обоих типов: как требующие интенсивных вычислений (CPU bound), так и связанные с операциями ввода-вывода (I/O bound), причём все запросы имеют время обслуживания. Масштабирование системы осуществляется горизонтально путём запуска $n$ идентичных реплик (подов/микросервисов) этого контейнера, которые в модели выступают как $n$ однородных серверов. Планировщик Kubernetes отвечал за распределение этих подов между доступными узлами кластера.
 
 \begin{figure}[!htbp]
   \centering
@@ -67,7 +71,9 @@ The core microservice was implemented as a single, stateless Docker container im
   \label{fig:Experimental_Setup}
 \end{figure}
 
-The system was modeled as a queue with a state transition diagram illustrated in Figure \ref{fig:State_Transition_Graph}. Each state $S_i$ denotes the presence of $i$ requests in the system. The queue is unlimited, which means that the number of requests in the system can be less or more than the number of containers.
+% The system was modeled as a queue with a state transition diagram illustrated in Figure \ref{fig:State_Transition_Graph}. Each state $S_i$ denotes the presence of $i$ requests in the system. The queue is unlimited, which means that the number of requests in the system can be less or more than the number of containers.
+
+Система была смоделирована как очередь с диаграммой переходов между состояниями, представленной на рис. \ref{fig:State_Transition_Graph}. Каждое состояние $S_i$ обозначает наличие $i$ заявок в системе. Очередь является бесконечной, что означает, что число заявок в системе может быть как меньше, так и больше числа контейнеров.
 
 \begin{figure}[!htbp]
   \centering
@@ -76,13 +82,22 @@ The system was modeled as a queue with a state transition diagram illustrated in
   \label{fig:State_Transition_Graph}
 \end{figure}
 
-The workload was characterized by a mixed distribution of requests. The key independent variable in this study was alpha ($\alpha$), defined as the proportion of requests that are CPU bound. Consequently, the proportion of I/O bound requests was ($1-\alpha$).
+% The workload was characterized by a mixed distribution of requests. The key independent variable in this study was alpha ($\alpha$), defined as the proportion of requests that are CPU bound. Consequently, the proportion of I/O bound requests was ($1-\alpha$).
 
-The arrival process followed a Poisson distribution with intensity $\lambda$ and the service rate $\mu(n,\alpha, i)$ was a function of $n$ (number of containers), $\alpha$ (proportion of CPU bound requests), and $i$ (number of requests present in system).
+% The arrival process followed a Poisson distribution with intensity $\lambda$ and the service rate $\mu(n,\alpha, i)$ was a function of $n$ (number of containers), $\alpha$ (proportion of CPU bound requests), and $i$ (number of requests present in system).
 
-The stationary state is guaranteed when $\lambda < n\mu(n, \alpha)$, otherwise the queue size will infinitely grow.
+% The stationary state is guaranteed when $\lambda < n\mu(n, \alpha)$, otherwise the queue size will infinitely grow.
 
-The probability of finding the system empty (with zero requests) $p_0$:
+% The probability of finding the system empty (with zero requests) $p_0$:
+
+Нагрузка характеризовалась смешанным распределением запросов. Ключевой независимой переменной в данном исследовании являлась величина $\alpha$ (альфа), определяемая как доля запросов, требующих интенсивных вычислений (CPU-bound). Соответственно, доля запросов, связанных с операциями ввода-вывода (I/O-bound), составляла $(1-\alpha)$.
+
+Процесс поступления запросов подчинялся распределению Пуассона с интенсивностью $\lambda$, а интенсивность обслуживания $\mu(n,\alpha, i)$ являлась функцией от $n$ (числа контейнеров), $\alpha$ (доли ЦП запросов) и $i$ (числа заявок, находящихся в системе).
+
+Стационарное состояние гарантируется при условии $\lambda < n\mu(n, \alpha)$; в противном случае размер очереди будет неограниченно расти.
+
+Вероятность обнаружить систему пустой (с нулевым числом заявок) $p_0$:
+
 \begin{equation}
   p_0=\left(
   1
@@ -131,19 +146,25 @@ The probability of finding the system empty (with zero requests) $p_0$:
 
 
 \subsection{Recurrence without Factorials}
-To make numerical stability possible, we define:
+% To make numerical stability possible, we define:
+Для обеспечения численной устойчивости введём следующее определение:
 \[
   A_w = \frac{\lambda^w}{w! \prod_{i=1}^{w}\mu(n,\alpha,i)}, \quad k = 0, 1, 2, \dots
 \]
-This makes possible computing \(A_k\) iteratively:
+
+% This makes possible computing \(A_k\) iteratively:
+Это позволяет вычислять $(A_k)$ итеративно:
 \[
   A_0 = 1, \qquad A_{k+1} = A_k \cdot \frac{\lambda}{(w+1)\mu(n,\alpha,w+1)}.
 \]
 
-The method makes values of \(A_w\) stay within a reasonable range because (1) eliminates recalculation of (i) factorial, (ii) $\lambda^w$ and (iii) $\prod_{i=1}^{w}\mu(n,\alpha,i)$ for each step (2) each step is a simple multiplication and division. This way $A_k$ monotonically decays/grows without overflowing.
+% The method makes values of \(A_w\) stay within a reasonable range because (1) eliminates recalculation of (i) factorial, (ii) $\lambda^w$ and (iii) $\prod_{i=1}^{w}\mu(n,\alpha,i)$ for each step (2) each step is a simple multiplication and division. This way $A_k$ monotonically decays/grows without overflowing.
 
-Using this optimization on modern computers allowed simulation and processing of up to $n \le 1000$ was still within `float` range, where without it no more than 250 containers.
+% Using this optimization on modern computers allowed simulation and processing of up to $n \le 1000$ was still within `float` range, where without it no more than 250 containers.
 
+Данный метод позволяет значениям \(A_w\) оставаться в разумных пределах, поскольку (1) устраняется необходимость пересчёта (i) факториала, (ii) \(\lambda^w\) и (iii) \(\prod_{i=1}^{w}\mu(n,\alpha,i)\) на каждом шаге; (2) каждый шаг представляет собой простые операции умножения и деления. Благодаря этому \(A_k\) монотонно убывает или возрастает без переполнения.
+
+Благодаря данной оптимизации на современных компьютерах моделирование и обработка данных для \(n \le 1000\) оставались в пределах диапазона типа `float`, тогда как без неё было возможно не более 250 контейнеров.
 
 \section{The problem of extracting Effective Service Rate from the container}
 
@@ -222,7 +243,7 @@ Average performance metrics (across all $\alpha$) vs. minimum sample count
   \label{fig:average_performance_metrics_vs_minimum_sample_count}
 \end{figure}
 
-В качестве регрессионной модели мы выбрали полиномиальную регрессию (второго разряда) так из всех испробованных моделей она показала себя лучше всех \ref{tab:model_performance_comparison}. Это классический и интерпретируемый метод, который даёт аналитическое решение и не требует подбора гиперпараметров (кроме степени полинома). Мы использовали реализацию из библиотеки scikit‑learn с методом наименьших квадратов. Полином второй степени позволяет моделировать нелинейные зависимости и взаимодействия между факторами, что важно, поскольку влияние числа серверов и загрузки на эффективную интенсивность не является линейным.
+В качестве регрессионной модели мы выбрали полиномиальную регрессию (второго разряда) так из всех испробованных моделей она показала себя лучше всех \ref{tab:model_performance_comparison}. Это классический и интерпретируемый метод, который даёт аналитическое решение и не требует подбора гиперпараметров (кроме степени полинома). Мы использовали реализацию из библиотеки scikit с методом наименьших квадратов. Полином второй степени позволяет моделировать нелинейные зависимости и взаимодействия между факторами, что важно, поскольку влияние числа серверов и загрузки на эффективную интенсивность не является линейным.
 
 \begin{table}[htbp]
   \centering
@@ -314,7 +335,7 @@ In addition to the analytical method, simulation modeling was conducted to valid
 \begin{figure}[!htbp]
   \centering
   \includegraphics[height=10cm]{analytical_vs_simulations.png} \\
-  \caption{Симуляционное моделирование (оранжевая линия с точками), аналитическое вычисление (синяя сплошная линия) и экспериментально полученные данные на сервере Kubernetes (зелёные х).}
+  \caption{Симуляционное моделирование Sim 1k, Sim 2k, Sim 5k, аналитическое вычисление (синяя сплошная линия) и экспериментально полученные данные на сервере Kubernetes (зелёные х).}
   \label{fig:Mel_fig_System_States}
 \end{figure}
 
