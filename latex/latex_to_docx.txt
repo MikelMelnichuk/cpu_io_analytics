@@ -1,1 +1,5 @@
-pandoc base.tex -o base.docx
+pandoc Melnichuk_simulation_and_anlysis_RUS.tex -o base_rus.docx
+
+
+
+pandoc Melnichuk_simulation_and_anlysis_RUS.tex --resource-path=./Melnichuk_Figs --extract-media=./Melnichuk_Figs --bibliography=refs.bib --citeproc --csl=ieee.csl -o Melnichuk_rus.docx

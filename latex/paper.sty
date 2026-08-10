@@ -44,6 +44,8 @@
 \usepackage{dsfont}
 
 % Define Theorems --------------------------------------------------------------
+\usepackage[explicit]{titlesec}
+
 % Put proper spacing after Theorem #.
 \newtheoremstyle{spacing}
 {\topsep}{\topsep}%   Space above nad below
@@ -58,7 +60,7 @@
 % \label{X:label_name} should match \Xautorefname
 \theoremstyle{spacing}
 \newtheorem{theorem}{Theorem}
-\newcommand{\theoremautorefname}{Theorem}
+% \newcommand{\theoremautorefname}{Theorem}
 \newtheorem{proposition}{Proposition}
 \newcommand{\propositionautorefname}{Proposition}
 \newtheorem{assumption}{Assumption}
@@ -170,22 +172,6 @@
   bookmarksopen = true
 }
 
-% Section and Subsection Styling -----------------------------------------------
-\usepackage[explicit]{titlesec}
-
-\titleformat{\section}
-{\large \bf}
-{\thesection \,---}
-{0.25em}
-{#1}
-
-\titleformat{\subsection}
-{\fontsize{12}{10}\it}
-{\thesubsection.}
-{0.5em}
-{#1}
-
-
 % Titlepage --------------------------------------------------------------------
 \usepackage{titling}
 
@@ -194,21 +180,21 @@
 
 % Title
 \pretitle{\begin{center}\huge}
-    \posttitle{\par\end{center}}
+\posttitle{\par\end{center}}
 
 % Author
 \preauthor{
   \begin{center}\Large\renewcommand{\arraystretch}{0.75}
-    \begin{tabular}[t]{c}
-      }
-      \postauthor{
-    \end{tabular}
+  \begin{tabular}[t]{c}
+}
+\postauthor{
+  \end{tabular}
   \end{center}
 }
 
 % Date
 \predate{\begin{center}\large\scshape\color{zinc700}}
-    \postdate{\end{center}}
+\postdate{\end{center}}
 
 % Abstract
 \renewenvironment{abstract}
@@ -230,8 +216,8 @@
 % No supsercript in footer
 \makeatletter
 \renewcommand\@makefntext[1]{%
-\parindent 1em \noindent%
-\hb@xt@1.8em{\hss\normalfont\@thefnmark.\hfill}#1%
+  \parindent 1em \noindent%
+  \hb@xt@1.8em{\hss\normalfont\@thefnmark.\hfill}#1%
 }
 \makeatother
 
@@ -388,3 +374,17 @@
 \NewDocumentCommand{\coauthorComment}{O{NAME} +m}{%
   \ifbool{INCLUDECOMMENTS}{{\color{cranberry}\textbf{#1:} #2}}{}
 }
+
+% Section and Subsection Styling -----------------------------------------------
+
+\titleformat{\section}
+{\large \bf}
+{\thesection \,---}
+{0.25em}
+{#1}
+
+\titleformat{\subsection}
+{\fontsize{12}{10}\it}
+{\thesubsection.}
+{0.5em}
+{#1}
