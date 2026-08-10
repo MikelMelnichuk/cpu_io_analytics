@@ -62,6 +62,19 @@
     "*.dvi"
   ],
   "latex-workshop.latex.autoBuild.run": "onSave",
+  "files.exclude": {
+    "**/*.aux": true,
+    "**/*.bbl": true,
+    "**/*.bcf": true,
+    "**/*.blg": true,
+    "**/*.fdb_latexmk": true,
+    "**/*.fls": true,
+    "**/*.log": true,
+    "**/*.out": true,
+    "**/*.run.xml": true,
+    "**/*.synctex.gz": true,
+    "**/*.xml": true
+  },
   // #############################################################
   //   ----------- LaTeX formatting configuration -----------
   "latex-workshop.formatting.latex": "latexindent",
