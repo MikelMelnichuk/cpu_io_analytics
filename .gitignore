@@ -538,7 +538,11 @@ wget-log*
 
 # Ignore local readmes
 *.md
+*.txt
 
 # Ignore local cache files
 *.pkl
 
+# local tables
+*.ods
+*.xlsx
