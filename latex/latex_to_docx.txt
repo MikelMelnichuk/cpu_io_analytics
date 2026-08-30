@@ -1,7 +1,17 @@
 pandoc Melnichuk_simulation_and_anlysis_RUS.tex -o base_rus.docx
 
+# Windows
+pandoc Melnichuk_simulation_and_anlysis_RUS.tex `
+    --resource-path=./Melnichuk_Figs `
+    --extract-media=./Melnichuk_Figs `
+    --bibliography=refs.bib `
+    -f latex `
+    --citeproc `
+    --csl=ieee.csl `
+    -o Melnichuk_rus.docx
 
 
+# Linux
 pandoc Melnichuk_simulation_and_anlysis_RUS.tex \
     --resource-path=./Melnichuk_Figs \
     --extract-media=./Melnichuk_Figs \
