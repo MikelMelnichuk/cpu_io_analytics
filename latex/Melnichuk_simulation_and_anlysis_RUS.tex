@@ -1,12 +1,11 @@
-\documentclass[12pt]{article}
+\documentclass[12pt,a4paper]{article}
 
-\PassOptionsToPackage{backend=biber, style=numeric, sorting=none}{biblatex}
-
-\usepackage{paper,math}
+% ---------- Language & Encoding ----------
+\usepackage{amsmath}
 
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[russian,english]{babel}
+\usepackage[english,russian]{babel}
 \usepackage{csquotes}
 
 % For algorithm representation
@@ -16,9 +15,35 @@
 % For pretty tables
 \usepackage{booktabs}
 \usepackage{caption}
+\usepackage{graphicx}
 
-% Add the local reference file
+% ---------- Bibliography (GOST) ----------
+\usepackage[
+    backend=biber,
+    style=gost-numeric,      % GOST numeric citation/bibliography style
+    sorting=none,            % order of appearance in text
+    autolang=other,          % switch language for Russian entries
+    doi=true,                % show DOI when available
+    url=false,               % suppress URL field
+    isbn=false               % suppress ISBN field
+]{biblatex}
 \addbibresource{refs.bib}
+
+% Use an em-dash (—) for page ranges, as the journal uses "1048—1050"
+\DefineBibliographyExtras{russian}{%
+  \protected\def\bibrangedash{\textemdash}%
+}
+\DefineBibliographyExtras{english}{%
+  \protected\def\bibrangedash{\textemdash}%
+}
+
+% Ensure the heading is exactly "Список литературы"
+\DefineBibliographyStrings{russian}{%
+  bibliography = {Список литературы},
+}
+
+% Define the folder that holds all the graphs
+\graphicspath{{Melnichuk_Figs/}}
 
 \hfuzz=30pt % Suppresses warnings for lines up to 30pt too wide
 \sloppy
@@ -28,12 +53,6 @@
   Мельничук Михаил, Владимир Анатольевич Богатырёв\\ {\itshape\large Университет ИТМО}\\
 }
 \date{\today}
-
-\booltrue{INCLUDECOMMENTS}
-\newcommand{\kyle}[1]{\coauthorComment[Kyle]{#1}}
-
-\graphicspath{{Melnichuk_Figs/}}
-\captionsetup[figure]{name=Fig.}
 
 \begin{document}
 
@@ -50,7 +69,7 @@
 \section{Введение}
 \label{sec:introduction}
 
-Kubernetes в последние годы стал фактическим стандартом для развёртывания распределённых приложений, в облачных и периферийных средах  \cite{pahl2017cloud}, в том числе системах хранения и обработки данных кластерной архитектуры. При разработке распределенных систем ключевым является обеспечение надежности \cite{половко2006основы, хомоненко2018прогноз, bogatyrev2023recovery, богатырев2006комбинаторно, богатырев2007оптимальное}, устойчивости функционирования \cite{koren2020fault, tat2024designing} при минимизации энергопотребления \cite{маслова2024расчет, астахова2024энергоэффективный} и задержек обслуживания запросов [???], как, собственно, в кластере [???], так и при доступе к нему через сеть [???]. Обоснование решений по выбору дисциплин распределения нагрузки в кластере, его восстановления после накопления отказов и обеспечения актуальности данных с учетом их старения \cite{крылов2024модель} должно опираться на аналитическое и имитационное моделировании при возможных натурных стендовых экспериментах [???]. Обоснование проектных решений на основе моделирования важно в задачах автомасштабирования, планирования ресурсов и обеспечения качества обслуживания функциональных запросов и восстановления системы после накопления отказов \ref{bogatyrev2023recovery, богатырев2023оценка}. Прогнозирование времени отклика распределенной системы при разных градациях нагрузки и разных конфигурациях кластера \cite{al2017elasticity} особенно важна, когда рабочая нагрузка меняется динамически.
+Kubernetes в последние годы стал фактическим стандартом для развёртывания распределённых приложений, в облачных и периферийных средах  \cite{pahl2017cloud}, в том числе системах хранения и обработки данных кластерной архитектуры. При разработке распределенных систем ключевым является обеспечение надежности \cite{половко2006основы, хомоненко2018прогноз, bogatyrev2023recovery, богатырев2006комбинаторно, богатырев2007оптимальное}, устойчивости функционирования \cite{koren2020fault, tat2024designing} при минимизации энергопотребления \cite{маслова2024расчет, астахова2024энергоэффективный} и задержек обслуживания запросов [???], как, собственно, в кластере [???], так и при доступе к нему через сеть [???]. Обоснование решений по выбору дисциплин распределения нагрузки в кластере, его восстановления после накопления отказов и обеспечения актуальности данных с учетом их старения \cite{крылов2024модель} должно опираться на аналитическое и имитационное моделировании при возможных натурных стендовых экспериментах [???]. Обоснование проектных решений на основе моделирования важно в задачах автомасштабирования, планирования ресурсов и обеспечения качества обслуживания функциональных запросов и восстановления системы после накопления отказов \cite{bogatyrev2023recovery, богатырев2023оценка}. Прогнозирование времени отклика распределенной системы при разных градациях нагрузки и разных конфигурациях кластера \cite{al2017elasticity} особенно важна, когда рабочая нагрузка меняется динамически.
 
 Классическая теория массового обслуживания по-прежнему остаётся фундаментальным инструментом, и к Kubernetes её применяют всё активнее. В работе \cite{pan2024performance} проанализированы алгоритмы планирования заданий через одноканальную M/M/1 и многосерверную M/M/s модели. Однако  подход  по \cite{pan2024performance}, как и большинство классических моделей \cite{kleinrock1974queueing}, предполагает постоянную интенсивность обслуживания каждым каналом обслуживания. А в реальной системе накладные расходы сети, балансировщика и планировщика Kubernetes существенно варьируются в зависимости от загрузки \cite{koukis2024performance, luo2021characterizing, shahrad2020serverless}.
 
@@ -309,5 +328,6 @@ Kubernetes в последние годы стал фактическим ста
 
 
 % ##################################################################################################
-\printbibliography[title={References}]
+\printbibliography
+
 \end{document}
