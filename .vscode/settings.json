@@ -109,6 +109,11 @@
     "myenv": "ignore",
     "equation": "ignore"
   },
+  "latex-workshop.bibtex-format.sort.enabled": true,
+  "[bibtex]": {
+    "editor.defaultFormatter": "James-Yu.latex-workshop",
+    "editor.formatOnSave": true
+  },
   // #############################################################
   //   ----------- Spelling Checker Configuration -----------
   // Enable both English and Russian spell checking
